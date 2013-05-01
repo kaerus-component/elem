@@ -60,26 +60,34 @@ var Data = {
     guidCounter: 1
 }; 
 
-function Elem(elem,selector){
-    if(typeof elem === 'string' && selector === undefined) {
-        selector = elem;
-        elem = null;
-    } else if(typeof elem === 'string' && selector === 'string') {
-        elem = Elem(null,elem);
-    } else if(elem){
-        elem = wrapElement(elem);
+function prepare(args){
+    var elem, selector, i = 0, args = Array.prototype.slice.call(args);
+
+    if(typeof args[0] === 'string' && args[1] === undefined) selector = args[i++];
+    else {
+        if(typeof args[i] === 'string') elem = args[i++];
+        if(typeof args[i] === 'function') elem = wrapElement(args[i++]);
+        if(typeof args[i] === 'object') elem = wrapElement(args[i++]);  
+        if(typeof args[i] === 'string') selector = args[i++];
     }
 
-    return Query.one(elem,selector);
+    if(elem && !selector) return elem;
+
+    if(!selector) throw TypeError("selector <string> missing");
+
+    return [elem,selector];
 }
 
-Elem.all = function(elem,selector){
-    if(typeof elem === 'string' && selector === undefined) {
-        selector = elem;
-        elem = undefined;
-    }
+function Elem(){
+    var args = prepare(arguments);
+
+    return Query.one.apply(null,args);
+}
+
+Elem.all = function(){
+    var args = prepare(arguments);
     
-    return Query.all(elem,selector);
+    return Query.all.apply(null,args);
 }          
 
 function wrapElement(elem){
