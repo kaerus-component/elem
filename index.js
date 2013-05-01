@@ -65,9 +65,9 @@ function prepare(args){
 
     if(typeof args[0] === 'string' && args[1] === undefined) selector = args[i++];
     else {
-        if(typeof args[i] === 'string') elem = args[i++];
-        if(typeof args[i] === 'function') elem = wrapElement(args[i++]);
-        if(typeof args[i] === 'object') elem = wrapElement(args[i++]);  
+        if(typeof args[i] === 'string') elem = Query.one(undefined,args[i++]);
+        else elem = wrapElement(args[i++]);
+
         if(typeof args[i] === 'string') selector = args[i++];
     }
 
@@ -91,12 +91,14 @@ Elem.all = function(){
 }          
 
 function wrapElement(elem){
+    if(!elem) return;
+
+    /* already wrapped */
     if(typeof elem === 'function' && elem.name === 'element')
         return elem;
 
-    var data = getData(elem);
-
-    var wrapped = element.bind(elem);
+    var data = getData(elem),
+        wrapped = element.bind(elem);
 
     function element(selector){
         if(selector) 
