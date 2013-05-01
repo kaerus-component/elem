@@ -71,9 +71,18 @@ function prepare(args){
 }
 
 function Elem(){
-    var args = prepare(arguments);
+    /* get element by selector */
+    if(!(this instanceof Elem)){
+        var args = prepare(arguments);
 
-    return Query.one.apply(null,args);
+        return Query.one.apply(null,args);
+    }
+    /* create new element */
+    var tagName = arguments[0];
+
+    if(!tagName) tagName = 'div';
+
+    return wrapElement(document.createElement(tagName));
 }
 
 Elem.all = function(){
@@ -100,7 +109,7 @@ function wrapElement(elem){
         return elem;
     }
 
-    /* todo: refactor */
+    /* todo: refactor these out */
     wrapped.guid = elem[Data.guid];
 
     wrapped.toString = function(format){
@@ -131,7 +140,55 @@ function wrapElement(elem){
         return data[key];
     }
 
+    wrapped.append = function(content){
+
+        if(Array.isArray(content)){
+            content.forEach(function(c){
+                wrapped.append(c);
+            });
+
+            return this;
+        }
+
+        var e = createElement(content);
+   
+        elem.appendChild(e);
+
+        return this;
+    }
+
+    wrapped.prepend = function(content){
+        
+        if(Array.isArray(content)){
+            content.forEach(function(c){
+                wrapped.prepend(c);
+            });
+
+            return this;
+        }
+
+        var e = createElement(content);
+
+        elem.insertBefore(e,elem.firstChild);
+
+        return this;
+    }
+
     return wrapped;
+}
+
+function createElement(content){
+    var elem;
+
+    if(typeof content === 'string'){
+        elem = document.createElement('div');
+        elem.innerHTML = content;
+        elem = elem.firstChild;
+    } else if(typeof content === 'function'){
+        elem = createElement(content());
+    } else elem = content;
+    
+    return elem;     
 }
 
 function extend(elem,obj) {
