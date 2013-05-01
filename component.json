@@ -1,0 +1,8 @@
+{
+  "name": "elem",
+  "version": "0.1.0",
+  "repo": "kaerus-component/elem",
+  "description": "DOM element extensions",
+  "scripts": ["index.js"],
+  "license": "Apache2_0"
+}
