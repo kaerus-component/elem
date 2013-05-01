@@ -2,47 +2,38 @@
 if(!document.querySelector || !document.querySelectorAll) 
     throw new Error("Element querySelectors are not present");    
 
+function query(method,root,selector){
+
+    if(!root) return document[method](selector);
+
+    var elem = root(),
+        id = elem.id;
+
+        elem.id = 'guid' + root.guid;
+
+    try {
+        selector = '#' + elem.id + ' ' + selector;
+        return elem[method](selector);
+    } catch (e) {
+        throw e;
+    } finally {
+        elem.id = id;
+    }    
+}
+
 var Query = {
     one: function(root,selector){
-        var ret, elem, id;
+        var elem = query('querySelector',root,selector);
+        
+        if(!elem) return;
 
-        if(root) {
-            elem = root();
-            id = elem.id;
-            elem.id = 'guid' + root.guid;
+        var ret = wrapElement(elem);
 
-            try {
-                selector = '#' + elem.id + ' ' + selector;
-                ret = document.querySelector(selector);
-            } catch (e) {
-                throw e;
-            } finally {
-                elem.id = id;
-            }
-        } else ret = document.querySelector(selector);
-
-        if(!ret) return;
-
-        return wrapElement(ret);
+        return ret;
     },
     all: function(root,selector){
-        var elems, elem, id;
-
-        if(root){
-            elem = root();
-            id = elem.id;
-            elem.id = 'guid' + root.guid;
-            
-            try {
-                selector = '#' + elem.id + ' ' + selector;
-                elems = document.querySelectorAll(selector);
-            } catch (e) {
-                throw e;
-            } finally {
-                elem.id = id;
-            }  
-        } else elems = document.querySelectorAll(selector);
-
+        var elems = query('querySelectorAll',root,selector);
+        
         if(!elems.length) return;
 
         var ret = [];
@@ -61,7 +52,8 @@ var Data = {
 }; 
 
 function prepare(args){
-    var elem, selector, i = 0, args = Array.prototype.slice.call(args);
+    var elem, selector, i = 0, 
+        args = Array.prototype.slice.call(args);
 
     if(typeof args[0] === 'string' && args[1] === undefined) selector = args[i++];
     else {
@@ -112,14 +104,23 @@ function wrapElement(elem){
     wrapped.guid = elem[Data.guid];
 
     wrapped.toString = function(format){
-        return elem.innerHTML;
+        return elem.outerHTML;
     }
 
     wrapped.html = function(content){
         if(content !== undefined)
             elem.innerHTML = content;
+        else return elem.innerHTML;
 
         return this;
+    }
+
+    wrapped.text = function(content){
+        if(content !== undefined)
+            elem.innerText = content;
+        else return elem.innerText;
+
+        return this;        
     }
 
     wrapped.data = function(key,val){
