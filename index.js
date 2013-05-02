@@ -1,5 +1,5 @@
 /* require shims */
-require('shim-querySelector');
+require('./shims/querySelector.js');
 
 function query(method,root,selector){
 
