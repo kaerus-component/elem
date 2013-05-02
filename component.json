@@ -1,6 +1,6 @@
 {
   "name": "elem",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "repo": "kaerus-component/elem",
   "description": "DOM element extensions",
   "scripts": [
@@ -10,5 +10,8 @@
   "local":[
   	"shim-querySelector"
   ],
+  "dependencies":{
+  	"shim-querySelector":"*"
+  },
   "license": "Apache2_0"
 }
