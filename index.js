@@ -2,7 +2,6 @@
 require('./shims/querySelector.js');
 
 function query(method,root,selector){
-
     if(!root) return document[method](selector);
 
     var elem = root(),
@@ -62,9 +61,7 @@ function prepare(args){
         if(typeof args[i] === 'string') selector = args[i++];
     }
 
-    if(elem && !selector) return elem;
-
-    if(!selector) throw TypeError("selector <string> missing");
+    if(!elem && !selector) throw TypeError("selector <string> missing");
 
     return [elem,selector];
 }
@@ -73,6 +70,8 @@ function Elem(){
     /* get element by selector */
     if(!(this instanceof Elem)){
         var args = prepare(arguments);
+
+        if(!args[1]) return args[0];
 
         return Query.one.apply(null,args);
     }
@@ -101,6 +100,7 @@ function proxy(context,handler){
 }
 
 function wrapElement(elem){
+
     if(!elem) return;
 
     /* already wrapped */
