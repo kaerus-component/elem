@@ -1,6 +1,5 @@
-
-if(!document.querySelector || !document.querySelectorAll) 
-    throw new Error("Element querySelectors are not present");    
+/* require shims */
+require('shim-querySelector');
 
 function query(method,root,selector){
 
@@ -91,6 +90,16 @@ Elem.all = function(){
     return Query.all.apply(null,args);
 }          
 
+function proxy(context,handler){
+    var curry = [].slice.call(arguments,2);
+
+    return function(){
+        var args = [].slice.call(arguments).concat(curry);
+
+        return handler.apply(context,args);
+    }
+}
+
 function wrapElement(elem){
     if(!elem) return;
 
@@ -99,7 +108,7 @@ function wrapElement(elem){
         return elem;
 
     var data = getData(elem),
-        wrapped = element.bind(elem);
+        wrapped = proxy(elem,element,data);
 
     function element(selector){
         if(selector) 
@@ -135,6 +144,7 @@ function wrapElement(elem){
     wrapped.data = function(key,val){
         var data = getData(elem);
 
+        if(key === undefined) return data;
         if(val !== undefined) data[key] = val;
 
         return data[key];

@@ -4,8 +4,11 @@
   "repo": "kaerus-component/elem",
   "description": "DOM element extensions",
   "scripts": [
-  	"querySelectors.js",
   	"index.js"
+  ],
+  "paths":["shims"],
+  "local":[
+  	"shim-querySelector"
   ],
   "license": "Apache2_0"
 }

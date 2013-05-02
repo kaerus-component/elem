@@ -1,0 +1,6 @@
+{
+	"name":"shim-querySelector",
+	"version":"0.1.0",
+	"repo":"local/shim-querySelector",
+	"scripts":["index.js"]
+}
