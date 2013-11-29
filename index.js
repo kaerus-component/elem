@@ -25,22 +25,20 @@ var Data = {
 
 function element(el,sel){
     if(typeof el === 'string') {
-        el = query('querySelector', sel, el);
+        el = query('querySelector', sel ? wrap(sel) : undefined, el);
     } else if(typeof sel === 'string') {
-        el = query('querySelector', wrap(el), sel);
+        el = query('querySelector', el ? wrap(el) : undefined, sel);
     }
 
     return el ? wrap(el) : undefined;
 }
 
 element.all = function(el,sel){
-     if(typeof el === 'string') {
-        el = query('querySelectorAll', sel, el);
+    if(typeof el === 'string') {
+        el = query('querySelectorAll', sel ? wrap(sel) : undefined, el);
     } else if(typeof sel === 'string') {
-        el = query('querySelectorAll', el, sel);
+        el = query('querySelectorAll', el ? wrap(el) : undefined, sel);
     }
-
-    el = query('querySelectorAll',wrap(el),sel);
 
     return el ? wrap(el) : undefined;
 }          
@@ -97,12 +95,15 @@ var event_methods = {
 
 function onEvent(event) {
     event = Event.normalize(event);
+
     element(this).event.emit(event.type,event);
 }
 
 function onDelegate(event) {
     var guid = element(this).guid;
+    
     event = Event.normalize(event);
+
     Event.emit(event.type+'>'+guid,event);
 }
 
@@ -244,7 +245,7 @@ function getData(el){
     return Data.store[guid];
 }
 
-function removedata(el){
+function removeData(el){
     var guid = el[Data.guid];
 
     if(!guid) return;
