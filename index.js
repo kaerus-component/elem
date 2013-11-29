@@ -124,10 +124,16 @@ function wrap(el){
     /* todo: refactor these out */
 
     function element(sel){
-        if(sel) return query('querySelector',element,sel);
+        if(sel) return wrap(query('querySelector',element,sel));
         
         /* unwrap */
         return el;   
+    }
+
+    element.all = function(sel){
+        if(sel) return wrap(query('querySelectorAll',element,sel));
+
+        return el;
     }
 
 
@@ -142,6 +148,8 @@ function wrap(el){
 */
 
     element.el = el;
+
+    element.id = el.id;
   
     element.guid = element.el[Data.guid];
 
@@ -154,6 +162,25 @@ function wrap(el){
             el.innerHTML = content;
         else return el.innerHTML;
 
+        return this;
+    }
+
+    element.attr = function(attr,val){
+        if(val === undefined) return el.getAttribute(attr);
+
+        if(val) el.setAttribute(attr,val);
+        else el.removeAttribute(atttr); 
+
+        return this;
+    }
+
+    element.style = function(prop,val){
+        if(typeof prop === 'string'){ 
+            if(val === undefined) return el.style[prop];
+            else el.style[prop] = val;
+        } else if(typeof prop === 'function') prop.call(this,el.style);
+        else if(typeof prop === 'object') for(var k in prop) el.style[k] = prop[k];
+        
         return this;
     }
 
