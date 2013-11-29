@@ -6,9 +6,9 @@
 <h1 id='header'>Elem tests</h1>
 <div id="test">Test element</div>
 <div id="test2">
-	<ul class="something">
-		<li>one</li>
-		<li>two</li>
+	<ul id="animal" class="something">
+		<li id="cat">cat</li>
+		<li id="dog">dog</li>
 	</ul>
 </div>
 	<script>
@@ -16,6 +16,7 @@
 
 		$('#test').html("Hello world!");
 
+		$('#test2').on('click',function(e){alert('clicked on ' + e.target.id)});
 
 	</script>
 </body>

@@ -1,47 +1,21 @@
 /* require shims */
 require('./shims/querySelector.js');
 
-function query(method,root,selector){
-    if(!root) return document[method](selector);
+var Event = require('event'),
+    Emitter = require('emitter');
 
-    var elem = root(),
-        id = elem.id;
 
-        elem.id = 'guid' + root.guid;
+function query(meth,el,sel){
+    if(!el) return document[meth](sel);
 
-    try {
-        selector = '#' + elem.id + ' ' + selector;
-        return elem[method](selector);
-    } catch (e) {
-        throw e;
-    } finally {
-        elem.id = id;
-    }    
+    var e = el(), id = e.id;
+
+    e.id = 'guid' + el.guid;
+
+    sel = '#' + e.id + ' ' + sel;
+        
+    try { return e[meth](sel) } catch (err) { throw err } finally { e.id = id }    
 }
-
-var Query = {
-    one: function(root,selector){
-        var elem = query('querySelector',root,selector);
-        
-        if(!elem) return;
-
-        var ret = wrapElement(elem);
-
-        return ret;
-    },
-    all: function(root,selector){
-        var elems = query('querySelectorAll',root,selector);
-        
-        if(!elems.length) return;
-
-        var ret = [];
-    
-        for(var i = 0, l = elems.length; i < l; i++ )
-            ret[ret.length] = wrapElement(elems.item(i));
-
-        return ret;
-    }
-};
 
 var Data = {
     store: {},
@@ -49,100 +23,149 @@ var Data = {
     guidCounter: 1
 }; 
 
-function prepare(args){
-    var elem, selector, i = 0, 
-        args = Array.prototype.slice.call(args);
-
-    if(typeof args[0] === 'string' && args[1] === undefined) selector = args[i++];
-    else {
-        if(typeof args[i] === 'string') elem = Query.one(undefined,args[i++]);
-        else elem = wrapElement(args[i++]);
-
-        if(typeof args[i] === 'string') selector = args[i++];
+function element(el,sel){
+    if(typeof el === 'string') {
+        el = query('querySelector', sel, el);
+    } else if(typeof sel === 'string') {
+        el = query('querySelector', wrap(el), sel);
     }
 
-    if(!elem && !selector) throw TypeError("selector <string> missing");
-
-    return [elem,selector];
+    return el ? wrap(el) : undefined;
 }
 
-function Elem(){
-    /* get element by selector */
-    if(!(this instanceof Elem)){
-        var args = prepare(arguments);
-
-        if(!args[1]) return args[0];
-
-        return Query.one.apply(null,args);
+element.all = function(el,sel){
+     if(typeof el === 'string') {
+        el = query('querySelectorAll', sel, el);
+    } else if(typeof sel === 'string') {
+        el = query('querySelectorAll', el, sel);
     }
-    /* create new element */
-    var tagName = arguments[0];
 
-    if(!tagName) tagName = 'div';
+    el = query('querySelectorAll',wrap(el),sel);
 
-    return wrapElement(document.createElement(tagName));
-}
-
-Elem.all = function(){
-    var args = prepare(arguments);
-    
-    return Query.all.apply(null,args);
+    return el ? wrap(el) : undefined;
 }          
 
-function proxy(context,handler){
-    var curry = [].slice.call(arguments,2);
+var event_methods = { 
+    on: function(ev,fn){
+        ev = ev.split(' ');
+        
+        var i = ev.length;
+        
+        while(1 < i--) this.on(ev[i],fn);
+        
+        ev = ev[0];  
+        
+        this.event.on(ev,fn);
 
-    return function(){
-        var args = [].slice.call(arguments).concat(curry);
+        Event.add(this.el,ev,onEvent);
 
-        return handler.apply(context,args);
+        return this;
+    }, 
+    off: function(ev,fn){
+        ev = ev.split(' ');
+
+        var i = ev.length;
+        
+        while(1 < i--) this.remove(ev[i],fn);
+        
+        ev = ev[0];
+
+        if(!this.event.off(ev,fn).hasListeners(ev))
+            Event.remove(this.el,ev,onEvent);
+
+        return this; 
+    }, 
+    delegate: function(ev,fn){
+        Event.add(document,ev,onDelegate,true);
+
+        var guid = this.guid;
+
+        Event.on(ev+'>'+guid,fn);
+
+        return this;
+    },
+    undelegate: function(ev,fn){
+        var guid = this.guid;
+
+        if(guid) {
+            Event.off(ev+'>'+guid,fn);
+        }
+
+        return this;
     }
+};
+
+function onEvent(event) {
+    event = Event.normalize(event);
+    element(this).event.emit(event.type,event);
 }
 
-function wrapElement(elem){
+function onDelegate(event) {
+    var guid = element(this).guid;
+    event = Event.normalize(event);
+    Event.emit(event.type+'>'+guid,event);
+}
 
-    if(!elem) return;
+function wrap(el){
+    if(!el || typeof el === 'function') return el;
 
-    /* already wrapped */
-    if(typeof elem === 'function' && elem.name === 'element')
-        return elem;
+    if(el instanceof NodeList){
+        var w = [];
 
-    var data = getData(elem),
-        wrapped = proxy(elem,element,data);
+        for(var i = 0, l = el.length; i < l; i++)
+            w[i] = wrap(el[i]);
 
-    function element(selector){
-        if(selector) 
-            return Query.one(wrapped,selector);
-        
-        /* unwrapped */
-        return elem;
+        return w;
     }
+
+    var data = getData(el);
 
     /* todo: refactor these out */
-    wrapped.guid = elem[Data.guid];
 
-    wrapped.toString = function(format){
-        return elem.outerHTML;
+    function element(sel){
+        if(sel) return query('querySelector',element,sel);
+        
+        /* unwrap */
+        return el;   
     }
 
-    wrapped.html = function(content){
+
+/*
+        element = (function(context,handler){
+            var curry = [].slice.call(arguments,2);
+            return function(){
+                var args = [].slice.call(arguments).concat(curry);
+                return handler.apply(context,args);
+            }
+        }(el,proxy,data));
+*/
+
+    element.el = el;
+  
+    element.guid = element.el[Data.guid];
+
+    element.toString = function(format){
+        return el.outerHTML;
+    }
+
+    element.html = function(content){
         if(content !== undefined)
-            elem.innerHTML = content;
-        else return elem.innerHTML;
+            el.innerHTML = content;
+        else return el.innerHTML;
 
         return this;
     }
 
-    wrapped.text = function(content){
+    element.text = function(content){
         if(content !== undefined)
-            elem.innerText = content;
-        else return elem.innerText;
+            el.innerText = content;
+        else return el.innerText;
 
         return this;        
     }
 
-    wrapped.data = function(key,val){
-        var data = getData(elem);
+    element.data = function(key,val){
+        var data = getData(el);
 
         if(key === undefined) return data;
         if(val !== undefined) data[key] = val;
@@ -150,11 +173,11 @@ function wrapElement(elem){
         return data[key];
     }
 
-    wrapped.append = function(content){
+    element.append = function(content){
 
         if(Array.isArray(content)){
             content.forEach(function(c){
-                wrapped.append(c);
+                element.append(c);
             });
 
             return this;
@@ -162,16 +185,16 @@ function wrapElement(elem){
 
         var e = createElement(content);
    
-        elem.appendChild(e);
+        el.appendChild(e);
 
         return this;
     }
 
-    wrapped.prepend = function(content){
+    element.prepend = function(content){
         
         if(Array.isArray(content)){
             content.forEach(function(c){
-                wrapped.prepend(c);
+                element.prepend(c);
             });
 
             return this;
@@ -179,58 +202,63 @@ function wrapElement(elem){
 
         var e = createElement(content);
 
-        elem.insertBefore(e,elem.firstChild);
+        el.insertBefore(e,el.firstChild);
 
         return this;
     }
 
-    return wrapped;
+    element.event = element.data('__event__');
+
+    augment(element,event_methods);
+
+    return element;
 }
 
 function createElement(content){
-    var elem;
+    var el;
 
     if(typeof content === 'string'){
-        elem = document.createElement('div');
-        elem.innerHTML = content;
-        elem = elem.firstChild;
+        el = document.createElement('div');
+        el.innerHTML = content;
+        el = el.firstChild;
     } else if(typeof content === 'function'){
-        elem = createElement(content());
-    } else elem = content;
+        el = createElement(content());
+    } else el = content;
     
-    return elem;     
+    return el;     
 }
 
-function extend(elem,obj) {
+function augment(el,obj) {
     for(var o in obj)
-        if(!elem[o]) elem[o] = obj[o];
+        if(!el[o]) el[o] = obj[o];
 }
 
-function getData(elem){
-    var guid = elem[Data.guid];
+function getData(el){
+    var guid = el[Data.guid];
 
     if(!guid){
-        guid = elem[Data.guid] = Data.guidCounter++;
-        Data.store[guid] = {};
+        guid = el[Data.guid] = Data.guidCounter++;
+        Data.store[guid] = {__event__: new Emitter()};
     }
 
     return Data.store[guid];
 }
 
-function removedata(elem){
-    var guid = elem[Data.guid];
+function removedata(el){
+    var guid = el[Data.guid];
 
     if(!guid) return;
 
     delete Data.store[guid];
 
     try {
-        delete elem[Data.guid];
-    } catch (e) {
-        if(elem.removeAttribute){
+        delete el[Data.guid];
+    } catch (err) {
+        if(el.removeAttribute){
             el.removeAttribute(Data.guid);
         }
     }
-}   
+}  
 
-module.exports = Elem;
+
+module.exports = element;
