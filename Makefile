@@ -1,13 +1,32 @@
-build: index.js components
-	@component build --dev
+NAME = elem
+TARGET = ./build
+BINDIR = ./node_modules/.bin
+PHANTOMJS = $(BINDIR)/phantomjs
+MOCHA_PHANTOMJS = @$(BINDIR)/mocha-phantomjs
+COMPONENT = @$(BINDIR)/component
 
-components:
-	@component install --dev
+all: build
 
-clean:
-	rm -rf build components
+build: dependencies standalone
+	@echo "Building component "
+	$(COMPONENT) build -v -o $(TARGET)
 
-test:
-	@mocha-phantomjs test/index.html
+standalone: 
+	@echo "Building standalone version"
+	$(COMPONENT) build -v -o $(TARGET) -n $(NAME) -s $(NAME)
 
-.PHONY: clean test
+dependencies:
+	$(COMPONENT) install -v	
+
+test: build
+	@echo "Running tests for browser"
+	$(MOCHA_PHANTOMJS) -p $(PHANTOMJS) test/runner.html
+
+distclean:
+	@echo "Cleaning upp files"
+	@rm -rf ./node_modules
+	@rm -rf ./components
+	@rm -rf ./build
+
+
+.PHONY: all test

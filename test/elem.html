@@ -16,7 +16,7 @@
 
 		$('#test').html("Hello world!");
 
-		$('#test2').on('click',function(e){alert('clicked on ' + e.target.id)});
+		$('#test2').on('click',function(e){ $(e.target).style('color','blue') });
 
 	</script>
 </body>

@@ -5,11 +5,17 @@
   "description": "DOM element extensions",
   "scripts": [
   	"shims/querySelector.js",
-  	"index.js"
+  	"index.js",
+    "lib/elem.js",
+    "lib/content.js",
+    "lib/css.js",
+    "lib/data.js",
+    "lib/event.js",
+    "lib/query.js"
   ],
   "dependencies": {
     "kaerus-component/emitter": "*",
-    "kaerus-component/event": "*"
+    "kaerus-component/event": "devel"
   },
   "license": "Apache2_0"
 }
