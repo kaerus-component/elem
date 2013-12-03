@@ -1,17 +1,18 @@
 {
   "name": "elem",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "repo": "kaerus-component/elem",
   "description": "DOM element extensions",
   "scripts": [
   	"shims/querySelector.js",
   	"index.js",
     "lib/elem.js",
-    "lib/content.js",
     "lib/css.js",
     "lib/data.js",
     "lib/event.js",
-    "lib/query.js"
+    "lib/query.js",
+    "lib/content.js",
+    "lib/attribute.js"
   ],
   "dependencies": {
     "kaerus-component/emitter": "*",
