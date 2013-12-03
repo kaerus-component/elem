@@ -4,7 +4,6 @@
   "repo": "kaerus-component/elem",
   "description": "DOM element extensions",
   "scripts": [
-  	"shims/querySelector.js",
   	"index.js",
     "lib/elem.js",
     "lib/css.js",
@@ -12,7 +11,9 @@
     "lib/event.js",
     "lib/query.js",
     "lib/content.js",
-    "lib/attribute.js"
+    "lib/attribute.js",
+    "shims/objectCreate.js",
+    "shims/querySelector.js"
   ],
   "dependencies": {
     "kaerus-component/emitter": "*",
