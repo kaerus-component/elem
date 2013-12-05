@@ -2,6 +2,11 @@
 <html>
 	<head><title>Element tests</title></head>
 	<script src="../build/build.js"></script>
+	<style type="text/css">
+		.something {
+			border: 1px solid red;
+		}
+	</style>
 <body>
 <h1 id='header'>Element tests</h1>
 <div id="test">Test element</div>
@@ -11,12 +16,27 @@
 		<li id="dog" data-attr="voff">dog</li>
 	</ul>
 </div>
+<div id="test3">
+	<h3>test3</h3>
+	<div class="something">
+			<p><span>A</span></p>
+			<p><span>B</span></p>
+			<p><span>C</span></p>	
+	</div>
+</div>
 	<script>
 		$ = require('elem');
 
 		$('#test').html("Hello world!");
 
 		$('#test2').on('click',function(e){ $(this).style('color','blue') });
+
+		$('#test3 div > p span','*').map(function(span){
+			span.id = "hej";
+				$(span).on('click',function(e){
+					console.log('clicked',this.innerHTML);
+				});
+			});
 
 	</script>
 </body>

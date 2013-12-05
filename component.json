@@ -1,6 +1,6 @@
 {
   "name": "elem",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "repo": "kaerus-component/elem",
   "description": "DOM element extensions",
   "scripts": [
@@ -9,7 +9,6 @@
     "lib/css.js",
     "lib/data.js",
     "lib/event.js",
-    "lib/query.js",
     "lib/content.js",
     "lib/attribute.js",
     "shims/objectCreate.js",
