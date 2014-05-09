@@ -11,6 +11,7 @@
     "lib/event.js",
     "lib/content.js",
     "lib/attribute.js",
+    "lib/createElement.js",
     "shims/objectCreate.js",
     "shims/querySelector.js"
   ],

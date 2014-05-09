@@ -24,7 +24,7 @@
 </div>
 <div id="test3">
 	<h3>test3</h3>
-	<div class="something">
+	<div id="list" class="something">
 			<p><span>A</span></p>
 			<p><span>B</span></p>
 			<p><span>C</span></p>	
@@ -44,6 +44,8 @@
 				$(this).toggleClass('blue');
 			});
 		});
+
+		$('#list').wrap('<div id="wrapper"></div>');
 
 	</script>
 </body>
