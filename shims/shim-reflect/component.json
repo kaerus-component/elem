@@ -1,0 +1,6 @@
+{
+	"name":"shim-reflect",
+	"version":"0.1.0",
+	"repo":"local/shim-reflect",
+	"scripts":["index.js"]
+}

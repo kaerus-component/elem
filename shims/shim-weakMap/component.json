@@ -1,0 +1,6 @@
+{
+	"name":"shim-weakMap",
+	"version":"0.1.0",
+	"repo":"local/shim-weakMap",
+	"scripts":["index.js"]
+}

@@ -6,6 +6,6 @@ if (!Object.create) {
         return function(o){
             F.prototype = o;
             return new F();
-        }
+        };
     })();
 }

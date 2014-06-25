@@ -1,0 +1,6 @@
+{
+	"name":"shim-bind",
+	"version":"0.1.0",
+	"repo":"local/shim-bind",
+	"scripts":["index.js"]
+}

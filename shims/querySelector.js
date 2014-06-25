@@ -7,7 +7,7 @@ if( typeof document.querySelector == "undefined") {
                 var sel = selector.split(/[ >]+/), com = selector.match(/[ >]+/g) || [], s, c, ret = [node], nodes, l, i, subs, m, j, check, x, w, ok,
                     as;
                 com.unshift(" ");
-                while(s = sel.shift()) {
+                while((s = sel.shift())) {
                     c = com.shift();
                     if( c) c = c.replace(/^ +| +$/g,"");
                     nodes = ret.slice(0);
