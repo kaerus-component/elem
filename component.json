@@ -4,7 +4,7 @@
   "repo": "kaerus-component/elem",
   "description": "DOM element extensions",
   "scripts": [
-  	"index.js",
+    "index.js",
     "lib/elem.js",
     "lib/css.js",
     "lib/data.js",
