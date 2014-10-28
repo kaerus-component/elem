@@ -16,7 +16,7 @@
     "shims/querySelector.js"
   ],
   "dependencies": {
-    "kaerus-component/event": "devel",
+    "kaerus-component/event": "*",
     "kaerus-component/emitter": "*",
     "kaerus-component/script": "*",
     "kaerus-component/ajax": "*",
