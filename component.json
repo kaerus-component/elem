@@ -20,7 +20,7 @@
     "kaerus-component/emitter": "*",
     "kaerus-component/script": "*",
     "kaerus-component/ajax": "*",
-    "kaerus-component/uP": "~0.4.6"
+    "kaerus-component/uP": "0.4.6"
   },
   "license": "Apache2_0"
 }
