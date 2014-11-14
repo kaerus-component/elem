@@ -1,13 +1,13 @@
- {
+{
   "name": "elem",
-  "version": "0.2.0",
-  "repo": "kaerus-component/elem",
+  "version": "0.3.2",
+  "repository": "kaerus-component/elem",
   "description": "DOM element extensions",
   "scripts": {
-  	"test":"make test"
+    "test":"make test"
   },
   "devDependencies": {
-  	"mocha": "*",
+    "mocha": "*",
     "chai": "*",
     "should": "*",
     "component": "*",
